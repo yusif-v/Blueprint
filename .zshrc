@@ -66,8 +66,21 @@ alias grep="rg"
 alias ls="eza --icons=always"
 alias tree="eza --tree"
 
+# --- Ngrok ---
+alias tunnel='ngrok http'
+
 # --- Python ---
 alias pip="pip3"
 alias python="python3"
 alias server="python3 -m http.server"
+
+venv() {
+    source "$HOME/Automation/Scripts/venv.sh" "$@"
+}
+
+# --- Rust ---
+export PATH="$(brew --prefix rust)/bin:$PATH"
+
+# --- Docker ---
+alias kali="docker exec -it kali-linux /bin/bash"
 
