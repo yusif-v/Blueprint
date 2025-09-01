@@ -1,15 +1,18 @@
 # Blueprint
 
-## Version 0.1.0
+## Version 0.2.0
 
 ---
 
 ## Introduction
-Blueprint is a personal setup script that configures a fresh terminal environment to match my preferred workflow. It automates the installation of essential tools and the symlinking of my dotfiles, providing a consistent and ready-to-use development environment across different machines.
+
+Blueprint is a personal setup script that configures a fresh terminal environment to match my preferred workflow.  
+It automates the installation of essential tools, Nerd Fonts, and the symlinking of my dotfiles, providing a consistent and ready-to-use development environment across different machines.
 
 ---
 
 ## Features
+
 This script automates the installation of the following:
 
 - **Terminal Tools**:
@@ -20,6 +23,11 @@ This script automates the installation of the following:
   - `tmux`: A terminal multiplexer.
   - `yazi`: A fast terminal file manager.
   - `zoxide`: A smarter `cd` command.
+
+- **Fonts**:
+  - Installs **Nerd Fonts** (default: `font-jetbrains-mono-nerd-font`).
+  - Optionally shows all available Nerd Fonts before installation.
+  - Validates your font choice and installs via Homebrew.
 
 - **Developer Tools**:
   - `git`: A version control system.
