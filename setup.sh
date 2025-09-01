@@ -57,6 +57,8 @@ if [[ "$OS" == MacOS ]]; then
     fi
   done
 
+  bash font.sh
+
   mkdir -p $HOME/.config
   mkdir -p $HOME/.config/alacritty/
 
