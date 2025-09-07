@@ -62,6 +62,17 @@ if [[ "$OS" == MacOS ]]; then
   mkdir -p $HOME/.config
   mkdir -p $HOME/.config/alacritty/
 
+  echo "Do you want to take backup? [Y/N]"
+  read -r Backup
+  if [[ "$Backup" =~ ^[Yy]$ ]]; then
+    for config in "${configs[@]}"; do
+      if [ -e "$HOME/$config" ]; then
+        cp -r "$HOME/$config" "$HOME/$config.backup"
+        echo "Backed up $config to $config.backup"
+      fi
+    done
+  fi
+
   for conf in "${configs[@]}"; do
     if [[ -e "$conf" ]]; then
       echo "Copying $conf to $HOME/$conf"
