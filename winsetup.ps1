@@ -4,7 +4,7 @@ $tools = @(
     @{Name="Vim"; Command="vim"; WingetId="vim.vim"; ExtraArgs="-e"},
     @{Name="Neovim"; Command="nvim"; WingetId="Neovim.Neovim"; ExtraArgs="-e"},
     @{Name="Visual Studio Code"; Command="code"; WingetId="Microsoft.VisualStudioCode"; ExtraArgs="-e"}
-    @{Name="OpenSSH"; Command="ssh"; WingetId="Microsoft.OpenSSH.Beta"; ExtraArgs="-e"}
+    @{Name="JetBrainsMono Nerd Font"; Command="none"; WingetId="DEVCOM.JetBrainsMonoNerdFont"; ExtraArgs="-e"}
 )
 
 foreach ($tool in $tools) {
