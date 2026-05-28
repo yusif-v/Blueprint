@@ -1,56 +1,72 @@
 # Blueprint
 
-## Version 0.2.0
+## Version 0.3.0
 
 ---
 
 ## Introduction
 
-Blueprint is a personal setup script that configures a fresh terminal environment to match my preferred workflow.  
-It automates the installation of essential tools, Nerd Fonts, and the symlinking of my dotfiles, providing a consistent and ready-to-use development environment across different machines.
+Blueprint is a personal setup project that configures a fresh terminal environment to match my preferred workflow.
+It installs essential tools and Nerd Fonts, then **symlinks** my dotfiles into `$HOME` so edits stay in sync with the repo, providing a consistent and ready-to-use development environment across macOS, Linux, and Windows.
+
+---
+
+## Structure
+
+```
+Blueprint/
+├── install.sh          # entrypoint: detects OS and dispatches
+├── dotfiles/           # mirrors $HOME; everything here gets symlinked
+│   ├── .zshrc
+│   ├── .vimrc
+│   ├── .tmux.conf
+│   ├── .p10k.zsh
+│   └── .config/
+│       ├── alacritty/alacritty.toml
+│       └── nvim/
+├── scripts/
+│   ├── lib.sh          # shared helpers: logging, backup, symlink
+│   ├── macos.sh        # Homebrew formulae + casks
+│   ├── linux.sh        # apt / pacman / dnf detection + install
+│   ├── windows.ps1     # winget tools + dotfile symlinks
+│   └── fonts.sh        # Nerd Font installer
+└── packages/
+    ├── brew.txt        # one formula per line
+    └── winget.txt      # command|winget-id per line
+```
+
+Dotfiles are deployed as **symlinks**. Any existing real file in `$HOME` is backed up to `<file>.backup` before linking. Adding a tool is a one-line edit to `packages/brew.txt` or `packages/winget.txt` — no script changes needed.
 
 ---
 
 ## Features
 
-This script automates the installation of the following:
-
-- **Terminal Tools**:
-  - `atuin`: A modern shell history manager.
-  - `bat`: A `cat` clone with syntax highlighting and Git integration.
-  - `eza`: A modern replacement for `ls`.
-  - `ripgrep`: A fast, powerful search tool.
-  - `tmux`: A terminal multiplexer.
-  - `yazi`: A fast terminal file manager.
-  - `zoxide`: A smarter `cd` command.
-
-- **Fonts**:
-  - Installs **Nerd Fonts** (default: `font-jetbrains-mono-nerd-font`).
-  - Optionally shows all available Nerd Fonts before installation.
-  - Validates your font choice and installs via Homebrew.
-
-- **Developer Tools**:
-  - `git`: A version control system.
-  - `neovim` & `vim`: Powerful text editors.
-  - `python`: A versatile programming language.
-  - `wget`: A utility to retrieve files from the web.
-
-- **Shell Customization**:
-  - `powerlevel10k`: A customizable theme for Zsh.
-  - `zinit`: A fast and powerful Zsh plugin manager.
+- **Terminal tools**: `atuin`, `bat`, `eza`, `ripgrep`, `tmux`, `yazi`, `zoxide`
+- **Developer tools**: `git`, `neovim` & `vim`, `python`, `wget`
+- **Shell**: `powerlevel10k` theme, `zinit` plugin manager
+- **Fonts**: Nerd Fonts (default `font-jetbrains-mono-nerd-font`), with optional interactive selection
 
 ---
 
 ## Requirements
 
-- **MacOS**:
-  - `Alacritty` (as the terminal emulator for which the config is provided).
+- **macOS**: `Alacritty` (the terminal emulator the config targets). Homebrew is installed automatically if missing.
+- **Linux**: a supported package manager (`apt`, `pacman`, or `dnf`). Some tools may need manual install depending on your distro.
+- **WSL**: auto-detected and treated specially — Blueprint installs **Linuxbrew** so the Homebrew-based `.zshrc` works unchanged (all tools available, just like macOS). The brew environment is appended to `~/.zprofile`.
+- **Windows**: `winget` (ships with modern Windows). Symlinks require Developer Mode or an elevated PowerShell.
 
 ---
 
 ## Usage
 
-To run the script and apply the configuration, simply execute the following command in your terminal:
+**macOS / Linux** — from the repo root:
 
 ```bash
-./setup.sh
+./install.sh
+```
+
+**Windows** — from PowerShell (elevated or with Developer Mode on):
+
+```powershell
+.\scripts\windows.ps1
+```

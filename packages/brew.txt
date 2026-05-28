@@ -1,0 +1,16 @@
+# Homebrew formulae installed by scripts/macos.sh (and reused on Linuxbrew).
+# One package per line. Lines starting with # are ignored.
+atuin
+bat
+eza
+git
+neovim
+powerlevel10k
+python
+ripgrep
+tmux
+vim
+wget
+yazi
+zinit
+zoxide

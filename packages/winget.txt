@@ -1,0 +1,9 @@
+# Windows packages installed by scripts/windows.ps1 via winget.
+# Format: <command-to-check>|<winget-id>   (command "none" = always install)
+# Lines starting with # are ignored.
+pwsh|Microsoft.Powershell
+git|Git.Git
+vim|vim.vim
+nvim|Neovim.Neovim
+code|Microsoft.VisualStudioCode
+none|DEVCOM.JetBrainsMonoNerdFont
