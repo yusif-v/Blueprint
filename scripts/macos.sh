@@ -21,6 +21,7 @@ install_homebrew() {
     return
   fi
   log "Installing Homebrew..."
+  [[ -n "${BLUEPRINT_NONINTERACTIVE:-}" ]] && export NONINTERACTIVE=1
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>"$HOME/.zprofile"
   eval "$(/opt/homebrew/bin/brew shellenv)"

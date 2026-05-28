@@ -15,6 +15,8 @@ It installs essential tools and Nerd Fonts, then **symlinks** my dotfiles into `
 
 ```
 Blueprint/
+├── bootstrap.sh        # curl | bash entrypoint (clones repo, runs install.sh)
+├── bootstrap.ps1       # irm | iex entrypoint for Windows
 ├── install.sh          # entrypoint: detects OS and dispatches
 ├── dotfiles/           # mirrors $HOME; everything here gets symlinked
 │   ├── .zshrc
@@ -61,16 +63,38 @@ Dotfiles are deployed as **symlinks**. Any existing real file in `$HOME` is back
 
 ## Usage
 
-**macOS / Linux** — from the repo root:
+### One-line install
+
+**macOS / Linux / WSL:**
 
 ```bash
-./install.sh
+curl -fsSL https://raw.githubusercontent.com/yusif-v/Blueprint/main/bootstrap.sh | bash
 ```
 
-**Windows** — from PowerShell (elevated or with Developer Mode on):
+**Windows** (PowerShell, elevated or with Developer Mode on):
 
 ```powershell
+irm https://raw.githubusercontent.com/yusif-v/Blueprint/main/bootstrap.ps1 | iex
+```
+
+The bootstrap installs `git` if needed, clones Blueprint to a permanent location
+(`~/.local/share/blueprint`, or `%LOCALAPPDATA%\Blueprint` on Windows — override
+with `BLUEPRINT_HOME`), then runs the installer. The clone must persist because
+dotfiles are symlinked into it. When piped, prompts re-attach to your terminal if
+one is available; otherwise it runs non-interactively with sane defaults.
+
+### From a clone
+
+If you'd rather clone first:
+
+```bash
+git clone https://github.com/yusif-v/Blueprint.git
+cd Blueprint
+./install.sh                 # macOS / Linux / WSL
+# or, on Windows:
 .\scripts\windows.ps1
 ```
 
-On macOS/Linux the installer also sets **zsh** as your login shell (installing it first on Linux if needed). Restart your terminal afterward for the change to take effect.
+On macOS/Linux the installer also sets **zsh** as your login shell (installing it
+first on Linux if needed). Restart your terminal afterward for the change to take
+effect. Set `BLUEPRINT_NONINTERACTIVE=1` to skip all prompts and accept defaults.
