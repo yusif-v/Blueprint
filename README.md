@@ -72,3 +72,5 @@ Dotfiles are deployed as **symlinks**. Any existing real file in `$HOME` is back
 ```powershell
 .\scripts\windows.ps1
 ```
+
+On macOS/Linux the installer also sets **zsh** as your login shell (installing it first on Linux if needed). Restart your terminal afterward for the change to take effect.

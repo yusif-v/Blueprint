@@ -50,3 +50,39 @@ symlink() {
   ln -s "$src" "$dest"
   ok "linked $dest -> $src"
 }
+
+# The user's current login shell, read from passwd (falls back to $SHELL).
+current_login_shell() {
+  if command -v getent &>/dev/null; then
+    getent passwd "$USER" | cut -d: -f7
+  else
+    dscl . -read "/Users/$USER" UserShell 2>/dev/null | awk '{print $2}' || echo "$SHELL"
+  fi
+}
+
+# Switch the login shell to zsh if it isn't already. zsh must be installed.
+set_default_shell() {
+  local zsh_path
+  zsh_path="$(command -v zsh || true)"
+  if [[ -z "$zsh_path" ]]; then
+    warn "zsh not installed; leaving login shell unchanged"
+    return 0
+  fi
+
+  if [[ "$(current_login_shell)" == "$zsh_path" ]]; then
+    ok "login shell already zsh ($zsh_path)"
+    return 0
+  fi
+
+  # zsh must be listed in /etc/shells to be a valid login shell.
+  if [[ -w /etc/shells || -n "$(command -v sudo)" ]] && ! grep -qxF "$zsh_path" /etc/shells 2>/dev/null; then
+    echo "$zsh_path" | sudo tee -a /etc/shells >/dev/null
+  fi
+
+  log "Setting login shell to $zsh_path (may prompt for password)..."
+  if chsh -s "$zsh_path" 2>/dev/null || sudo chsh -s "$zsh_path" "$USER"; then
+    ok "Login shell set to zsh — restart your terminal to apply."
+  else
+    warn "Could not change shell automatically. Run: chsh -s $zsh_path"
+  fi
+}

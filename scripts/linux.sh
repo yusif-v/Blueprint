@@ -82,6 +82,18 @@ install_via_pm() {
   done < <(read_packages "$BLUEPRINT_ROOT/packages/brew.txt")
 }
 
+# zsh is the login shell this config targets; install it via the system PM
+# (a real /etc/shells-registered binary is more reliable for login than brew's).
+ensure_zsh() {
+  command -v zsh &>/dev/null && { ok "zsh already installed"; return 0; }
+  log "Installing zsh..."
+  if   command -v apt-get &>/dev/null; then sudo apt-get install -y zsh
+  elif command -v pacman  &>/dev/null; then sudo pacman -S --needed --noconfirm zsh
+  elif command -v dnf     &>/dev/null; then sudo dnf install -y zsh
+  elif command -v brew    &>/dev/null; then brew install zsh
+  else warn "No package manager to install zsh"; fi
+}
+
 link_dotfiles() {
   local entry src dest
   for entry in "${DOTLINKS[@]}"; do
@@ -108,7 +120,9 @@ main() {
     fi
   fi
 
+  ensure_zsh
   link_dotfiles
+  set_default_shell
   ok "Linux setup complete."
 }
 

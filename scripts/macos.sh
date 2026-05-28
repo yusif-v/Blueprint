@@ -51,6 +51,7 @@ main() {
   install_packages
   source "$SCRIPT_DIR/fonts.sh" && install_fonts
   link_dotfiles
+  set_default_shell
   ok "macOS setup complete."
 }
 
