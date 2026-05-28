@@ -5,21 +5,35 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# --- Homebrew (set prefix once; absent on bare-metal Linux) ---
+if command -v brew &>/dev/null; then
+  BREW_PREFIX="$(brew --prefix)"
+fi
+
 # --- Powerlevel10k ---
-source $(brew --prefix)/share/powerlevel10k/powerlevel10k.zsh-theme
+if [[ -n "${BREW_PREFIX:-}" && -f "$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme" ]]; then
+  source "$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme"
+elif [[ -f "$HOME/.local/share/powerlevel10k/powerlevel10k.zsh-theme" ]]; then
+  source "$HOME/.local/share/powerlevel10k/powerlevel10k.zsh-theme"
+fi
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # --- ZINIT ---
-export ZINIT_HOME="$(brew --prefix zinit)"
-source "${ZINIT_HOME}/zinit.zsh"
-
-zinit light zdharma-continuum/fast-syntax-highlighting
-zinit light zsh-users/zsh-completions
-zinit light zsh-users/zsh-autosuggestions
+if [[ -n "${BREW_PREFIX:-}" && -d "$BREW_PREFIX/opt/zinit" ]]; then
+  ZINIT_HOME="$BREW_PREFIX/opt/zinit"
+else
+  ZINIT_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/zinit/zinit.git"
+fi
+if [[ -f "$ZINIT_HOME/zinit.zsh" ]]; then
+  source "$ZINIT_HOME/zinit.zsh"
+  zinit light zdharma-continuum/fast-syntax-highlighting
+  zinit light zsh-users/zsh-completions
+  zinit light zsh-users/zsh-autosuggestions
+fi
 
 # --- Completions ---
 autoload -Uz compinit && compinit
-zinit cdreplay -q
+command -v zinit &>/dev/null && zinit cdreplay -q
 
 # --- Zstyle ---
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
@@ -46,41 +60,54 @@ setopt hist_verify
 export EDITOR=nvim
 
 # --- Atuin ---
-eval "$(atuin init zsh)"
+command -v atuin &>/dev/null && eval "$(atuin init zsh)"
 
 # --- Zoxide ---
-eval "$(zoxide init zsh)"
-alias cd="z"
+if command -v zoxide &>/dev/null; then
+  eval "$(zoxide init zsh)"
+  alias cd="z"
+fi
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
 
 # --- Bat ---
-alias cat="bat -pp"
+command -v bat &>/dev/null && alias cat="bat -pp"
 
 # --- Ripgrep ---
-alias grep="rg"
+command -v rg &>/dev/null && alias grep="rg"
 
 # --- Eza ---
-alias ls="eza --icons=always"
-alias tree="eza --tree"
+if command -v eza &>/dev/null; then
+  alias ls="eza --icons=always"
+  alias tree="eza --tree"
+fi
 
 # --- Ngrok ---
-alias tunnel='ngrok http'
+command -v ngrok &>/dev/null && alias tunnel='ngrok http'
 
 # --- Python ---
-alias pip="pip3"
-alias python="python3"
+command -v python3 &>/dev/null && alias python="python3"
+command -v pip3 &>/dev/null && alias pip="pip3"
 alias server="python3 -m http.server"
 
 venv() {
-    source "$HOME/Automation/Scripts/venv.sh" "$@"
+  local script="$HOME/Automation/Scripts/venv.sh"
+  if [[ -f "$script" ]]; then
+    source "$script" "$@"
+  else
+    echo "venv helper not found at $script" >&2
+    return 1
+  fi
 }
 
 # --- Rust ---
-export PATH="$(brew --prefix rust)/bin:$PATH"
+if [[ -n "${BREW_PREFIX:-}" && -d "$BREW_PREFIX/opt/rust/bin" ]]; then
+  export PATH="$BREW_PREFIX/opt/rust/bin:$PATH"
+elif [[ -d "$HOME/.cargo/bin" ]]; then
+  export PATH="$HOME/.cargo/bin:$PATH"
+fi
 
 # --- Docker ---
 alias kali="docker exec -it kali-linux /bin/bash"
-

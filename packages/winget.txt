@@ -1,9 +1,26 @@
 # Windows packages installed by scripts/windows.ps1 via winget.
 # Format: <command-to-check>|<winget-id>   (command "none" = always install)
 # Lines starting with # are ignored.
+#
+# CLI tools below are wired up by dotfiles/windows/Microsoft.PowerShell_profile.ps1,
+# which scripts/windows.ps1 symlinks to $PROFILE.
+
+# --- Core tools & editors ---
 pwsh|Microsoft.Powershell
 git|Git.Git
 vim|vim.vim
 nvim|Neovim.Neovim
 code|Microsoft.VisualStudioCode
+
+# --- CLI utilities (parity with brew.txt where a winget package exists) ---
+python|Python.Python.3.13
+bat|sharkdp.bat
+eza|eza-community.eza
+rg|BurntSushi.ripgrep.MSVC
+zoxide|ajeetdsouza.zoxide
+atuin|atuinsh.atuin
+yazi|sxyazi.yazi
+oh-my-posh|JanDeDobbeleer.OhMyPosh
+
+# --- Fonts ---
 none|DEVCOM.JetBrainsMonoNerdFont

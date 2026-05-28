@@ -21,9 +21,11 @@ Blueprint/
 │   ├── .vimrc
 │   ├── .tmux.conf
 │   ├── .p10k.zsh
-│   └── .config/
-│       ├── alacritty/alacritty.toml
-│       └── nvim/
+│   ├── .config/
+│   │   ├── alacritty/alacritty.toml
+│   │   └── nvim/
+│   └── windows/
+│       └── Microsoft.PowerShell_profile.ps1   # symlinked to $PROFILE
 ├── scripts/
 │   ├── lib.sh          # shared helpers: logging, backup, symlink
 │   ├── macos.sh        # Homebrew formulae + casks
@@ -53,7 +55,7 @@ Dotfiles are deployed as **symlinks**. Any existing real file in `$HOME` is back
 - **macOS**: `Alacritty` (the terminal emulator the config targets). Homebrew is installed automatically if missing.
 - **Linux**: a supported package manager (`apt`, `pacman`, or `dnf`). Some tools may need manual install depending on your distro.
 - **WSL**: auto-detected and treated specially — Blueprint installs **Linuxbrew** so the Homebrew-based `.zshrc` works unchanged (all tools available, just like macOS). The brew environment is appended to `~/.zprofile`.
-- **Windows**: `winget` (ships with modern Windows). Symlinks require Developer Mode or an elevated PowerShell.
+- **Windows**: `winget` (ships with modern Windows). Symlinks require Developer Mode or an elevated PowerShell. Installs CLI tools (zoxide, atuin, bat, eza, ripgrep, yazi) plus `oh-my-posh`, and symlinks a PowerShell profile to `$PROFILE` that wires them up — the Windows analogue of the zsh setup.
 
 ---
 

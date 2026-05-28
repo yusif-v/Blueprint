@@ -24,7 +24,34 @@ function Install-Tools {
     }
 }
 
-# --- Symlink dotfiles into the user profile ---
+# --- Symlink one item, backing up any existing real file ---
+function Link-Item {
+    param([string]$Src, [string]$Dest)
+
+    if (-not (Test-Path $Src)) {
+        Write-Host "Source missing, skipping: $Src"
+        return
+    }
+
+    $destDir = Split-Path -Parent $Dest
+    if ($destDir -and -not (Test-Path $destDir)) {
+        New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+    }
+
+    if (Test-Path $Dest) {
+        $item = Get-Item $Dest -Force
+        if ($item.LinkType -eq "SymbolicLink") {
+            Remove-Item $Dest -Force
+        } else {
+            Move-Item $Dest "$Dest.backup" -Force
+            Write-Host "Backed up existing $Dest -> $Dest.backup"
+        }
+    }
+
+    New-Item -ItemType SymbolicLink -Path $Dest -Target $Src | Out-Null
+    Write-Host "Linked $Dest -> $Src"
+}
+
 # Maps repo path (under dotfiles/) to destination under $HOME.
 $DotLinks = @{
     ".vimrc"                          = ".vimrc"
@@ -34,32 +61,17 @@ $DotLinks = @{
 
 function Link-Dotfiles {
     foreach ($entry in $DotLinks.GetEnumerator()) {
-        $src  = Join-Path $Dotfiles $entry.Key
-        $dest = Join-Path $HOME     $entry.Value
-
-        if (-not (Test-Path $src)) {
-            Write-Host "Source missing, skipping: $src"
-            continue
-        }
-
-        $destDir = Split-Path -Parent $dest
-        if (-not (Test-Path $destDir)) { New-Item -ItemType Directory -Path $destDir -Force | Out-Null }
-
-        if (Test-Path $dest) {
-            $item = Get-Item $dest -Force
-            if ($item.LinkType -eq "SymbolicLink") {
-                Remove-Item $dest -Force
-            } else {
-                Move-Item $dest "$dest.backup" -Force
-                Write-Host "Backed up existing $dest -> $dest.backup"
-            }
-        }
-
-        New-Item -ItemType SymbolicLink -Path $dest -Target $src | Out-Null
-        Write-Host "Linked $dest -> $src"
+        Link-Item (Join-Path $Dotfiles $entry.Key) (Join-Path $HOME $entry.Value)
     }
+}
+
+# Symlink the PowerShell profile to $PROFILE (lives under Documents, not $HOME).
+function Link-Profile {
+    $src = Join-Path $Dotfiles "windows\Microsoft.PowerShell_profile.ps1"
+    Link-Item $src $PROFILE
 }
 
 Install-Tools
 Link-Dotfiles
-Write-Host "Windows setup complete."
+Link-Profile
+Write-Host "Windows setup complete. Restart PowerShell to load the new profile."
