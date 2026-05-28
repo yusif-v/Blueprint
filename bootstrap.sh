@@ -27,6 +27,14 @@ ensure_git() {
 
 fetch_repo() {
   if [[ -d "$BLUEPRINT_HOME/.git" ]]; then
+    # Refuse to pull from / execute an unexpected repo at this path.
+    local existing
+    existing="$(git -C "$BLUEPRINT_HOME" remote get-url origin 2>/dev/null || true)"
+    if [[ "$existing" != "$REPO_URL" ]]; then
+      err "Unexpected git repo at $BLUEPRINT_HOME (origin: ${existing:-none})."
+      err "Expected $REPO_URL. Remove it or set BLUEPRINT_HOME to another path."
+      exit 1
+    fi
     info "Updating existing Blueprint at $BLUEPRINT_HOME"
     git -C "$BLUEPRINT_HOME" pull --ff-only
   else

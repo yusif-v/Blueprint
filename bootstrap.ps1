@@ -16,6 +16,12 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
 }
 
 if (Test-Path (Join-Path $Target ".git")) {
+    # Refuse to pull from / execute an unexpected repo at this path.
+    $existing = (git -C $Target remote get-url origin 2>$null)
+    if ($existing -ne $RepoUrl) {
+        Write-Error "Unexpected git repo at $Target (origin: $existing). Expected $RepoUrl. Remove it or set BLUEPRINT_HOME elsewhere."
+        return
+    }
     Write-Host ":: Updating existing Blueprint at $Target"
     git -C $Target pull --ff-only
 } else {
